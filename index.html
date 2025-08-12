@@ -19,6 +19,18 @@ const sheetID = "1XU73X1XClZiG5Tg5VeqEGCBr80UGPIpEoZYyt5Jog1U";
 const sheetName = "Inventario";
 const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
 
+// Función para formatear la fecha que viene como objeto Date(yyyy,m,d)
+function formatDate(dateObj) {
+  if (!dateObj) return "";
+  const dateStr = dateObj.toString();
+  const match = dateStr.match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (!match) return dateStr;
+  const year = parseInt(match[1]);
+  const month = parseInt(match[2]) + 1; // JS meses 0-based
+  const day = parseInt(match[3]);
+  return `${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}`;
+}
+
 // Obtener parámetro de la URL
 const params = new URLSearchParams(window.location.search);
 const idEquipo = params.get("id");
@@ -38,7 +50,7 @@ fetch(base)
         <p><b>Serial:</b> ${equipo.Serial}</p>
         <p><b>Código Interno:</b> ${equipo.CódigoInterno}</p>
         <p><b>Asignado a:</b> ${equipo.AsignadoA}</p>
-        <p><b>Última Fecha Mantenimiento:</b> ${equipo.ÚltimaFechaMantenimiento}</p>
+        <p><b>Última Fecha Mantenimiento:</b> ${formatDate(equipo.ÚltimaFechaMantenimiento)}</p>
       `;
     } else {
       document.getElementById("info").innerHTML = "Equipo no encontrado.";
