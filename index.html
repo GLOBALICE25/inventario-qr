@@ -1,68 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Consulta de Inventario</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 30px; }
-  .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 400px; }
-  .title { font-size: 1.2em; margin-bottom: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Consulta de Equipo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+    footer {
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
+    img.logo {
+      height: 80px;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Consulta de Equipo</h1>
-<div id="info" class="card">Cargando datos...</div>
+  <!-- Logo con URL directa de Google Drive -->
+  <img src="https://drive.google.com/uc?export=view&id=17DGMhemdeFZ8G6Rw2_l2S2tcztiw4oOW" alt="Logo Empresa" class="logo" />
 
-<script>
-const sheetID = "1XU73X1XClZiG5Tg5VeqEGCBr80UGPIpEoZYyt5Jog1U";
-const sheetName = "Inventario";
-const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+  <h1>Consulta de Equipo</h1>
 
-// Función para formatear la fecha que viene como objeto Date(yyyy,m,d)
-function formatDate(dateObj) {
-  if (!dateObj) return "";
-  const dateStr = dateObj.toString();
-  const match = dateStr.match(/Date\((\d+),(\d+),(\d+)\)/);
-  if (!match) return dateStr;
-  const year = parseInt(match[1]);
-  const month = parseInt(match[2]) + 1; // JS meses 0-based
-  const day = parseInt(match[3]);
-  return `${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}`;
-}
+  <div id="resultado">
+    <!-- Aquí va el resultado de la consulta (equipo, serial, etc.) -->
+  </div>
 
-// Obtener parámetro de la URL
-const params = new URLSearchParams(window.location.search);
-const idEquipo = params.get("id");
+  <footer>
+    Los Militares N.º 5953, Edificio Britania - Oficina 24<br />
+    Las Condes, Santiago de Chile<br />
+    Tel: +56 2 32512180
+  </footer>
 
-fetch(base)
-  .then(res => res.text())
-  .then(text => {
-    const json = JSON.parse(text.substr(47).slice(0, -2));
-    const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
-    const headers = json.table.cols.map(c => c.label);
-    const data = rows.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
-    const equipo = data.find(e => e.ID_Equipo === idEquipo);
-
-    if (equipo) {
-      document.getElementById("info").innerHTML = `
-        <div class="title">Equipo: ${equipo.ID_Equipo}</div>
-        <p><b>Serial:</b> ${equipo.Serial}</p>
-        <p><b>Código Interno:</b> ${equipo.CódigoInterno}</p>
-        <p><b>Asignado a:</b> ${equipo.AsignadoA}</p>
-        <p><b>Última Fecha Mantenimiento:</b> ${formatDate(equipo.ÚltimaFechaMantenimiento)}</p>
-      `;
-    } else {
-      document.getElementById("info").innerHTML = "Equipo no encontrado.";
-    }
-  })
-  .catch(err => {
-    document.getElementById("info").innerHTML = "Error al cargar los datos.";
-    console.error(err);
-  });
-</script>
-
+  <script>
+    // Aquí tu script para mostrar la info dinámica
+  </script>
 </body>
 </html>
-
-
