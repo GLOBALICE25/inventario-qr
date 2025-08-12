@@ -1,3 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Consulta de Inventario</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 30px; }
+  .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 400px; }
+  .title { font-size: 1.2em; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h1>Consulta de Equipo</h1>
+<div id="info" class="card">Cargando datos...</div>
+
+<script>
 const sheetID = "1XU73X1XClZiG5Tg5VeqEGCBr80UGPIpEoZYyt5Jog1U";
+const sheetName = "Inventario";
+const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+// Obtener parámetro de la URL
+const params = new URLSearchParams(window.location.search);
+const idEquipo = params.get("id");
+
+fetch(base)
+  .then(res => res.text())
+  .then(text => {
+    const json = JSON.parse(text.substr(47).slice(0, -2));
+    const rows = json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
+    const headers = json.table.cols.map(c => c.label);
+    const data = rows.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+    const equipo = data.find(e => e.ID_Equipo === idEquipo);
+
+    if (equipo) {
+      document.getElementById("info").innerHTML = `
+        <div class="title">Equipo: ${equipo.ID_Equipo}</div>
+        <p><b>Serial:</b> ${equipo.Serial}</p>
+        <p><b>Código Interno:</b> ${equipo.CódigoInterno}</p>
+        <p><b>Asignado a:</b> ${equipo.AsignadoA}</p>
+        <p><b>Última Fecha Mantenimiento:</b> ${equipo.ÚltimaFechaMantenimiento}</p>
+      `;
+    } else {
+      document.getElementById("info").innerHTML = "Equipo no encontrado.";
+    }
+  })
+  .catch(err => {
+    document.getElementById("info").innerHTML = "Error al cargar los datos.";
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>
 
 
